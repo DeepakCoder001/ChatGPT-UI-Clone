@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .bg {
+            background-color: #212121;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav {
+            width: 100%;
+            height: 90px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-1 {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 16px;
+        }
+
+        .nav-1>button {
+            height: 35px;
+            border: none;
+            padding: 0 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .nav-1>button:nth-child(2) {
+            background-color: #303030;
+            color: white;
+            border: 1px solid #414141;
+            border-radius: 30px;
+        }
+
+        .nav-1>i {
+            color: white;
+            font-size: 12px;
+            border: 2px solid white;
+            border-radius: 50%;
+            height: 20px;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #chat-box {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 0 auto;
+            width: 92%;
+            max-width: 720px;
+            padding: 10px 0 150px 0;
+            scroll-behavior: smooth;
+            gap: 10px;
+        }
+
+        .heading {
+            flex-shrink: 0;
+            height: 90px;
+            align-content: center;
+            color: white;
+            text-align: center;
+            padding: 0 16px;
+        }
+
+        .heading>h1 {
+            font-size: 28px;
+        }
+
+        .ask {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 0 12px 16px;
+        }
+
+        .ask>div {
+            border-radius: 26px;
+            background-color: #2d2d2d;
+            width: 92%;
+            max-width: 720px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ask>div>input {
+            border-radius: 30px;
+            outline: none;
+            padding: 10px 8px;
+            background-color: #2d2d2d;
+            font-size: 15px;
+            color: white;
+            border: none;
+            width: 100%;
+        }
+
+        /* Action buttons row (Attach / Search / Study / mic-or-send) - a real
+           flex row instead of the old float+inline-block mix, so it wraps and
+           resizes cleanly at any screen width. */
+        .ask-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .ask-actions-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .ask-actions-left>button {
+            background-color: #3a3a3a;
+            color: white;
+            border: 1px solid #414141;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            height: 32px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .ask-actions-left>button>i {
+            font-size: 12px;
+        }
+
+        .footer {
+            flex-shrink: 0;
+        }
+
+        .footer>p {
+            background-color: #212121;
+            color: white;
+            text-align: center;
+            font-size: 13px;
+            padding: 6px 12px;
+            line-height: 1.5;
+        }
+
+        .footer>p>span {
+            border-bottom: 1px solid white;
+            white-space: nowrap;
+        }
+
+        #voicebtn {
+            background-color: #3a3a3a;
+            color: white;
+            border: 1px solid #414141;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            height: 32px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        /* Send button floats naturally in the flex row - no more absolute
+           positioning with magic pixel offsets that only worked at one
+           specific window width. */
+        #sendbtn {
+            border-radius: 50%;
+            background-color: white;
+            color: black;
+            height: 32px;
+            width: 32px;
+            font-size: 15px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        #chat-box>.botmsg {
+            background-color: black;
+            color: white;
+            margin-right: auto;
+            border-radius: 20px;
+            padding: 12px 16px;
+            text-align: left;
+            max-width: 85%;
+            width: fit-content;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        #chat-box>.usermsg {
+            background-color: #3a3a3a;
+            color: white;
+            margin-left: auto;
+            width: fit-content;
+            max-width: 85%;
+            border-radius: 20px;
+            padding: 8px 18px;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* ---------- Tablet ---------- */
+        @media (max-width: 900px) {
+
+            #chat-box,
+            .ask>div {
+                width: 94%;
+            }
+
+            .heading>h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* ---------- Mobile ---------- */
+        @media (max-width: 600px) {
+            .nav {
+                height: 70px;
+            }
+
+            .nav-1 {
+                padding-right: 10px;
+                gap: 6px;
+            }
+
+            .nav-1>button {
+                font-size: 12px;
+                height: 32px;
+                padding: 0 10px;
+            }
+
+            #chat-box,
+            .ask>div {
+                width: 96%;
+            }
+
+            #chat-box {
+                padding: 8px 0 165px 0;
+            }
+
+            .heading {
+                height: 70px;
+            }
+
+            .heading>h1 {
+                font-size: 20px;
+            }
+
+            /* Hide the text labels on the action buttons and keep icons only,
+               so all four buttons comfortably fit in one row on a phone. */
+            .ask-actions-left>button {
+                padding: 0 10px;
+                width: 36px;
+                height: 32px;
+                justify-content: center;
+            }
+
+            .ask-actions-left>button .btn-label {
+                display: none;
+            }
+
+            #voicebtn .btn-label {
+                display: none;
+            }
+
+            #voicebtn {
+                width: 36px;
+                padding: 0;
+                justify-content: center;
+            }
+
+            #chat-box>.botmsg,
+            #chat-box>.usermsg {
+                max-width: 90%;
+                font-size: 14px;
+            }
+
+            .footer>p {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+        }
+
+        /* ---------- Very small phones ---------- */
+        @media (max-width: 360px) {
+            .nav-1>button:nth-child(2) {
+                display: none;
+                /* "Sign up for free" hidden on very narrow screens, "Log in" stays */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg">
+        <div class="nav">
+            <div class="nav-1">
+                <button>Log in</button>
+                <button>Sign up for free</button>
+                <i class="fa-solid fa-question"></i>
+            </div>
+        </div>
+        <div id="chat-box"></div>
+        <div class="heading">
+            <h1>ChatGPT</h1>
+        </div>
+        <div class="ask">
+            <div>
+                <input type="text" name="" id="inp" placeholder="Ask anything" autocomplete="off">
+                <div class="ask-actions">
+                    <div class="ask-actions-left">
+                        <button type="button">
+                            <i class="fa-solid fa-paperclip" style="color: #ffffff;"></i>
+                            <span class="btn-label">Attach</span></button>
+                        <button type="button">
+                            <i class="fa-solid fa-globe" style="color: #ffffff;"></i>
+                            <span class="btn-label">Search</span></button>
+                        <button type="button">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                            <span class="btn-label">Study</span></button>
+                    </div>
+                    <button id="voicebtn" type="button">
+                        <i class="fas fa-microphone-lines" style="color: white"></i>
+                        <span class="btn-label">voice</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>By messaging ChatGPT, you agree to our
+            <span>Terms</span>
+            and have read our
+            <span>Privacy Policy. </span>
+            See
+            <span> Cookie Preferences.</span>
+        </p>
+    </div>
+    <script>
+        const askActionsRow = document.querySelector(".ask-actions");
+        const inp = document.getElementById("inp");
+        const voicebtn = document.getElementById("voicebtn");
+        const chatbox = document.getElementById("chat-box");
+
+        // Chatbot's canned responses - defined once at the top level instead of
+        // being recreated every time the send button appears.
+        const data = {
+            "hi": "Hello! How can I help you today?",
+            "hello": "Namaste! 😊 Main aapka chatbot hoon. Aap mujhse kuch bhi pooch sakte hain!",
+            "how are you": "I am fine, thank you! How about you?",
+            "what is your name": "I am your friendly chatbot!",
+            "tell me a joke": "Why don't scientists trust atoms? Because they make up everything!",
+            "bye": "Goodbye! Have a great day!",
+            "thank you": "You're welcome!",
+            "what can you do": "I can chat with you and answer your simple questions.",
+            "help": "Sure! How can I assist you?",
+            "what is the weather": "I am not connected to the internet, so I can't check the weather right now.",
+            "who created you": "I was created by an awesome developer!",
+            "how old are you": "I am timeless.",
+            "tell me about yourself": "I am a simple chatbot built to help you.",
+            "what is chatgpt": "ChatGPT is a language model developed by OpenAI.",
+            "can you speak hindi": "Haan, main Hindi mein baat kar sakta hoon!",
+            "what is your favorite color": "I like all colors equally.",
+            "do you like music": "Yes! Music is wonderful.",
+            "what is your hobby": "Chatting with users like you!",
+            "are you a robot": "Yes, I am a chatbot powered by AI.",
+            "where are you from": "I live in the cloud.",
+            "can you help me": "Of course! What do you need help with?",
+            "how do you work": "I use pre-defined responses to answer your questions.",
+            "do you learn": "I don't learn yet, but I can understand many things.",
+            "what is ai": "AI stands for Artificial Intelligence.",
+            "what is machine learning": "Machine Learning is a subset of AI that allows computers to learn from data.",
+            "tell me a fact": "Did you know? Honey never spoils.",
+            "do you have feelings": "I don't have feelings, but I try to understand you.",
+            "can you tell stories": "Yes, I can tell simple stories.",
+            "what is your favorite food": "I don't eat, but I love talking about food!",
+            "do you sleep": "No, I am always awake to chat with you.",
+            "what languages do you speak": "I can understand and respond in many languages.",
+            "can you translate": "I can help translate simple sentences.",
+            "what is your purpose": "My purpose is to assist and chat with users.",
+            "do you have friends": "Yes, other chatbots are my friends!",
+            "are you smart": "I try my best!",
+            "can you play games": "I can't play games but I can chat about them.",
+            "what is the meaning of life": "That's a big question! Many say it's to be happy.",
+            "how do I learn programming": "Start with basics, practice a lot, and never give up!",
+            "can you tell me a riddle": "Sure! What has keys but can't open locks? A piano.",
+            "what is your favorite movie": "I love movies about AI!",
+            "do you like books": "Yes! Books are great sources of knowledge.",
+            "can you recommend a book": "Try '1984' by George Orwell, it's a classic.",
+            "what time is it": "I don't have a clock, sorry!",
+            "can you sing": "I can't sing, but I can share lyrics.",
+            "do you understand emotions": "I try to understand, but I don't feel emotions.",
+            "how can I be happy": "Spend time with loved ones and do things you enjoy!",
+            "what is love": "Love is a deep feeling of affection and care.",
+            "can you tell me a poem": "Roses are red, violets are blue, chatting with you is fun too!",
+            "thank you very much": "Glad to help! Anytime!",
+            // --- new commands ---
+            "good morning": "Good morning! Hope you have a wonderful day ahead. ☀️",
+            "good night": "Good night! Sleep well and take care. 🌙",
+            "what is python": "Python is a popular, beginner-friendly programming language known for its simple syntax.",
+            "what is javascript": "JavaScript is the programming language that makes web pages interactive.",
+            "can you code": "I can chat about code, but I don't execute programs myself.",
+            "what is html": "HTML stands for HyperText Markup Language — it's used to structure web pages.",
+            "what is css": "CSS stands for Cascading Style Sheets — it's used to style web pages.",
+            "what is the capital of india": "The capital of India is New Delhi.",
+            "who is elon musk": "Elon Musk is an entrepreneur known for Tesla, SpaceX, and other companies.",
+            "i love you": "Aww, that's sweet! I'm just a chatbot, but I appreciate you. 💙",
+            "what is your version": "I'm a simple demo chatbot, not an official ChatGPT version.",
+            "clear chat": "Type 'clear' and press send to clear the conversation.",
+            "clear": "__CLEAR_CHAT__",
+            "what day is it": "I don't have access to real-time data, so I can't tell you today's date.",
+            "how do I say thank you in hindi": "'Dhanyavaad' or 'Shukriya' both mean thank you in Hindi.",
+            "tell me something interesting": "Octopuses have three hearts and blue blood!",
+            "what is the speed of light": "The speed of light is about 299,792 kilometers per second.",
+            "who is the prime minister of india": "I don't have real-time data, so I can't confirm the current office holders.",
+            "what is your favorite animal": "I like all animals — especially clever ones like octopuses and crows!",
+            "can you give me advice": "Sure! Take things one step at a time, and be kind to yourself.",
+        };
+
+        // Auto-scrolls the message list to the latest message
+        function scrollToBottom() {
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const rawValue = inp.value.trim();
+            if (!rawValue) return;
+
+            const userInput = rawValue.toLowerCase();
+
+            // Hide the big centered "ChatGPT" heading once the conversation starts
+            document.querySelector(".heading > h1").style.display = "none";
+
+            // Special command: clears the whole conversation
+            if (userInput === "clear") {
+                chatbox.innerHTML = "";
+                inp.value = "";
+                inp.dispatchEvent(new Event("input"));
+                document.querySelector(".heading > h1").style.display = "block";
+                return;
+            }
+
+            const userMessage = document.createElement("p");
+            userMessage.setAttribute("class", "usermsg");
+            userMessage.textContent = rawValue;
+            chatbox.appendChild(userMessage);
+
+            const botMessage = document.createElement("p");
+            botMessage.setAttribute("class", "botmsg");
+            botMessage.textContent = data[userInput]
+                ? data[userInput]
+                : "Sorry, I didn't understand that. Try asking something else.";
+            chatbox.appendChild(botMessage);
+
+            // Clear the input and reset back to the mic button state
+            inp.value = "";
+            inp.dispatchEvent(new Event("input"));
+
+            scrollToBottom();
+        }
+
+        inp.addEventListener("input", () => {
+            if (inp.value.length > 0) {
+                voicebtn.style.display = "none";
+                if (!document.getElementById("sendbtn")) {
+                    const sendbtn = document.createElement("button");
+                    sendbtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+                    sendbtn.setAttribute("id", "sendbtn");
+                    sendbtn.setAttribute("type", "button");
+                    askActionsRow.append(sendbtn);
+                    sendbtn.addEventListener("click", sendMessage);
+                }
+            } else {
+                voicebtn.style.display = "flex";
+                const sendbtn = document.getElementById("sendbtn");
+                if (sendbtn) {
+                    sendbtn.remove();
+                }
+            }
+        });
+
+        // Enter key also sends the message, like ChatGPT
+        inp.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && inp.value.trim().length > 0) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
